@@ -55,8 +55,7 @@ if [[ ${GIT_BRANCH} != "origin/master" ]]; then
     --diff \
     --cached \
     --format html --out rubocop-${GIT_COMMIT}.html \
-    --format clang \
-    app test lib
+    --format clang
 fi
 
 bundle exec rake db:drop db:create db:schema:load
