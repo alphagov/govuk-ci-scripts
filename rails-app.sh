@@ -60,6 +60,12 @@ fi
 
 bundle exec rake db:drop db:create db:schema:load
 
+# Precompile the assets (if needed)
+if [[ ${PRECOMPILE_ASSETS} != "yes" ]]; then
+  bundle exec rake assets:clean assets:precompile
+fi
+
+# Run the tests
 if bundle exec rake ${TEST_TASK:-"default"}; then
   github_status "$REPO_NAME" success "succeeded on Jenkins"
 else
