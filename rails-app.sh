@@ -45,8 +45,9 @@ git clone git@github.com:alphagov/govuk-content-schemas.git tmp/govuk-content-sc
   git checkout ${SCHEMA_GIT_COMMIT:-"master"}
 )
 export GOVUK_CONTENT_SCHEMAS_PATH=tmp/govuk-content-schemas
-
 export RAILS_ENV=test
+
+# Installing the dependencies
 bundle install --path "${HOME}/bundles/${JOB_NAME}" --deployment --without development
 
 # Lint changes introduced in this branch, but not for master
@@ -58,8 +59,16 @@ if [[ ${GIT_BRANCH} != "origin/master" ]]; then
     --format clang
 fi
 
+# Setup the DB
 bundle exec rake db:drop db:create db:schema:load
 
+# Precompile the assets (if needed)
+if [[ ${PRECOMPILE_ASSETS} == "yes" ]]; then
+  echo "Precompiling the assets"
+  bundle exec rake assets:clean assets:precompile
+fi
+
+# Run the tests
 if bundle exec rake ${TEST_TASK:-"default"}; then
   github_status "$REPO_NAME" success "succeeded on Jenkins"
 else
