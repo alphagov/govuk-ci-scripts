@@ -52,11 +52,19 @@ bundle install --path "${HOME}/bundles/${JOB_NAME}" --deployment --without devel
 
 # Lint changes introduced in this branch, but not for master
 if [[ ${GIT_BRANCH} != "origin/master" ]]; then
+  echo "Running ruby linter"
   bundle exec govuk-lint-ruby \
     --diff \
     --cached \
     --format html --out rubocop-${GIT_COMMIT}.html \
     --format clang
+fi
+
+# If we can find a path to the SCSS linter, run it
+
+if [[ ${SCSS_LINT} == "yes" ]]; then
+  echo "Running SASS linter"
+  bundle exec govuk-lint-sass app/assets/stylesheets
 fi
 
 # Setup the DB
